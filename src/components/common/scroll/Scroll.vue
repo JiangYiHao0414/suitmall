@@ -16,14 +16,31 @@
         scroll: null
       }
     },
+    props: {
+      probeType: {
+        type: Number,
+        default: 0
+      }
+    },
     mounted() {
       this.scroll = new BScroll(this.$refs.wrapper, {
-        click: true
+        click: true,
+        probeType: this.probeType
       })
+
+      // 监听滚动位置
+      this.scroll.on('scroll', (position) => {
+        this.$emit('scroll', position)
+      })
+    },
+    methods: {
+      scrollTo(x, y, time=300) {
+        this.scroll.scrollTo(x, y, time)
+      }
     }
   }
 </script>
 
 <style scoped>
-  
+
 </style>
