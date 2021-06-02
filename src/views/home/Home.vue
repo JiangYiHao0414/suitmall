@@ -2,7 +2,9 @@
 	<div id="home">
     <nav-bar class="home-nav"><div slot="center">购物街</div></nav-bar>
 
-    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll">
+    <!-- 先把上拉加载更多的代码注释了 -->
+    <scroll class="content" ref="scroll" :probe-type="3" @scroll="contentScroll"
+            :pull-up-load="true" >
       <home-swiper :banners="banners" />
       <recommend-view :recommends="recommends" />
       <feature-view />
@@ -59,11 +61,15 @@
       this.getHomeGoods('pop')
       this.getHomeGoods('new')
       this.getHomeGoods('sell')
+
+      this.$bus.$on('itemImageLoad', () => {
+        this.$refs.scroll.refresh()
+      })
     },
     computed: {
       showGoods(){
         return this.goods[this.currentType].list
-      }
+      },
     },
     methods: {
       // 事件监听的相关方法
@@ -86,6 +92,9 @@
       contentScroll(position) {
         this.isShowBackTop = (-position.y) > 1000
       },
+      // loadMore() {
+      //   this.getHomeGoods(this.currentType)
+      // },
 
       // 网络请求的相关方法
       getHomeMultidata() {
@@ -100,6 +109,8 @@
         getHomeGoods(type,page).then(res => {
           this.goods[type].list.push(...res.data.list)
           this.goods[type].page += 1;
+
+          // this.$refs.scroll.finishPullUp()
         })
       }
     }
